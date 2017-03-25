@@ -1,4 +1,7 @@
-from django.core.cache import caches
+try:
+    from django.core.cache import caches
+except ImportError:
+    pass
 from django.core.cache.backends.locmem import LocMemCache
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
@@ -20,7 +23,7 @@ class DatabaseBackend(Backend):
                 "The constance.backends.database app isn't installed "
                 "correctly. Make sure it's in your INSTALLED_APPS setting.")
 
-        if settings.DATABASE_CACHE_BACKEND:
+        if getattr(settings, 'DATABASE_CACHE_BACKEND'):
             self._cache = caches[settings.DATABASE_CACHE_BACKEND]
             if isinstance(self._cache, LocMemCache):
                 raise ImproperlyConfigured(
